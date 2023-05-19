@@ -14,7 +14,7 @@ export const exampleRouter = createTRPCRouter({
   createThing: publicProcedure
     .input(z.object({ foo: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      console.log("clicked button");
+      console.log(input.foo);
       return "asdf";
     }),
   hello: publicProcedure.input(helloInputSchema).query(({ input, ctx }) => {

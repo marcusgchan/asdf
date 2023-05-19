@@ -9,7 +9,7 @@ export default function Todos() {
   const { data: asdf, isLoading } = api.asdf.hello.useQuery({
     message: "asdfasdf",
   });
- // const mutation = api.asdf.createThing.useMutation();
+  const mutation = api.asdf.createThing.useMutation();
 
   if (isLoading || !asdf) {
     return <div>loading...</div>;
@@ -19,7 +19,7 @@ export default function Todos() {
       <button
         className="flex rounded-md border-2 border-blue-500 p-2"
         onClick={() => {
-         // mutation.mutate({ foo: "asdfasdf" });
+          mutation.mutate({ foo: "asdfasdf" });
         }}
       >
         asdf
