@@ -2,6 +2,7 @@ import {
   $createTextNode,
   $getRoot,
   $getSelection,
+  EditorConfig,
   EditorState,
   LexicalNode,
   SerializedTextNode,
@@ -16,9 +17,7 @@ import { LinkNode } from "@lexical/link";
 import { QuoteNode, HeadingNode } from "@lexical/rich-text";
 import { CodeNode } from "@lexical/code";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import LexicalErrorBoundary, {
-  LexicalErrorBoundaryProps,
-} from "@lexical/react/LexicalErrorBoundary";
+import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
@@ -31,8 +30,8 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { type } from "os";
 import { TreeView } from "@lexical/react/LexicalTreeView";
+import { NodeKey } from "lexical";
 
 const theme = {
   root: "p-4 border-slate-500 border-2 rounded h-auto min-h-[200px] focus:outline-none focus-visible:border-black",
@@ -84,18 +83,14 @@ export default function Editor() {
   const initialConfig = {
     namespace: "MyEditor",
     nodes: [
+      ColoredNode,
       {
         replace: TextNode,
         with: (node: TextNode) => {
-          console.log(node);
-          console.log(
-            new ExtendedTextNode(node.getTextContent(), node.getKey())
-          );
-          return new ExtendedTextNode(node.getTextContent(), node.getKey());
+          console.log("test");
+          return new ColoredNode(node.getTextContent(), "blue", node.getKey());
         },
       },
-      TextNode,
-      ExtendedTextNode,
       TableNode,
       TableCellNode,
       TableRowNode,
@@ -128,7 +123,6 @@ export default function Editor() {
           <CheckListPlugin />
           <ListPlugin />
           <LinkPlugin />
-          <TranscriptKeyPlugin />
           <ExportPlugin />
           <TreeViewPlugin />
           <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
@@ -147,18 +141,19 @@ class ExtendedTextNode extends TextNode {
   __wordKey: string | undefined;
 
   constructor(text: string, key?: string) {
-    console.log("test");
+    console.log("in constructor");
     super(text, key);
   }
 
-  static getType() {
+  static getType(): string {
     return "extended-text";
   }
 
-  static clone(node: ExtendedTextNode) {
-    return new ExtendedTextNode(node.getTextContent(), node.getKey());
+  static clone(node: ExtendedTextNode): ExtendedTextNode {
+    console.log("cloning");
+    return new ExtendedTextNode(node.__text, node.__key);
   }
-
+  
   setWordKey(wordKey: string) {
     const self = this.getWritable();
     self.__wordKey = wordKey;
@@ -185,6 +180,48 @@ class ExtendedTextNode extends TextNode {
     );
     return node;
   }
+}
+export class ColoredNode extends TextNode {
+  __color: string;
+
+  constructor(text: string, color: string, key?: NodeKey) {
+    super(text, key);
+    this.__color = color;
+  }
+
+  static getType(): string {
+    return 'colored';
+  }
+
+  static clone(node: ColoredNode): ColoredNode {
+    return new ColoredNode(node.__text, node.__color, node.__key);
+  }
+
+  createDOM(config: EditorConfig): HTMLElement {
+    const element = super.createDOM(config);
+    element.style.color = this.__color;
+    return element;
+  }
+
+  updateDOM(
+    prevNode: ColoredNode,
+    dom: HTMLElement,
+    config: EditorConfig,
+  ): boolean {
+    const isUpdated = super.updateDOM(prevNode, dom, config);
+    if (prevNode.__color !== this.__color) {
+      dom.style.color = this.__color;
+    }
+    return isUpdated;
+  }
+}
+
+export function $createColoredNode(text: string, color: string): ColoredNode {
+  return new ColoredNode(text, color);
+}
+
+export function $isColoredNode(node: LexicalNode): boolean {
+  return node instanceof ColoredNode;
 }
 
 function $createExtendedTextNode(text: string, key?: string) {
@@ -229,6 +266,7 @@ function TreeViewPlugin() {
       timeTravelButtonClassName="debug-timetravel-button"
       timeTravelPanelSliderClassName="debug-timetravel-panel-slider"
       timeTravelPanelButtonClassName="debug-timetravel-panel-button"
+      treeTypeButtonClassName="e"
       editor={editor}
     />
   );
