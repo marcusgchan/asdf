@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.editor-container ul {
+  padding-left: 2rem;
+}
+
+.editor-container ul :where(li[dir], li:has(> br)) {
+  list-style: disc;
+}
+
+.editor-container ul ul :where(li[dir], li:has(> br)) {
+  list-style: circle;
+}
+
+.editor-container ul ul ul :where(li[dir], li:has(> br)) {
+  list-style: square;
+}

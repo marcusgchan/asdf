@@ -16,6 +16,7 @@ export default function Todos() {
   }
   return (
     <>
+      <Display greetingsssssss={asdf.greetingsssssss} />
       <button
         className="flex rounded-md border-2 border-blue-500 p-2"
         onClick={() => {
