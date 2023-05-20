@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import { RouterOutputs } from "~/utils/api";
+import { Button, Container } from "@nextui-org/react";
 
 type DisplayProps = RouterOutputs["asdf"]["hello"];
 
@@ -16,15 +17,20 @@ export default function Todos() {
   }
   return (
     <>
-      <Display greetingsssssss={asdf.greetingsssssss} />
-      <button
-        className="flex rounded-md border-2 border-blue-500 p-2"
-        onClick={() => {
-          mutation.mutate({ foo: "asdfasdf" });
-        }}
-      >
-        asdf
-      </button>
+      <Container css={{ backgroundColor: '$gradient' }}>
+        <Display greetingsssssss={asdf.greetingsssssss} />
+        <button
+          className="flex rounded-md border-2 border-blue-500 p-2"
+          onClick={() => {
+            mutation.mutate({ foo: "asdfasdf" });
+          }}
+        >
+          asdf
+        </button>
+        <Button>
+          Clickable
+        </Button>
+      </Container>
     </>
   );
 }
